@@ -1,6 +1,13 @@
 spring:
   application:
     name: monster-ai-code
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://117.72.209.24:3306/monster_ai_code
+    username: root
+    password: 1241340047chen.
+
 server:
   port: 8124
   servlet:
@@ -16,3 +23,23 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+
+# AI
+langchain4j:
+  open-ai:
+    chat-model:
+      base-url: https://api.deepseek.com
+      api-key: sk-02ec9e3b6071449dbc29240cfd2f92fc
+      model-name: deepseek-chat
+      log-requests: true
+      log-responses: true
+      max-tokens: 8192
+      strict-json-schema: true
+      response-format: json_object
+    streaming-chat-model:
+      base-url: https://api.deepseek.com
+      api-key: sk-02ec9e3b6071449dbc29240cfd2f92fc
+      model-name: deepseek-chat
+      log-requests: true
+      log-responses: true
+      max-tokens: 8192
