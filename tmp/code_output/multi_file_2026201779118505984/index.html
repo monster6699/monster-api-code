@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务记录</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-tasks"></i> 任务记录</h1>
+            <p class="subtitle">记录您的每日任务，提高工作效率</p>
+        </header>
+
+        <main>
+            <section class="task-input-section">
+                <div class="input-group">
+                    <input type="text" id="taskInput" placeholder="输入新任务...">
+                    <button id="addTaskBtn" class="btn-primary">
+                        <i class="fas fa-plus"></i> 添加任务
+                    </button>
+                </div>
+                <div class="stats">
+                    <span id="totalTasks">总任务: 0</span>
+                    <span id="completedTasks">已完成: 0</span>
+                    <span id="pendingTasks">待完成: 0</span>
+                </div>
+            </section>
+
+            <section class="task-list-section">
+                <h2><i class="fas fa-list"></i> 任务列表</h2>
+                <div id="taskList" class="task-list">
+                    <!-- 任务将通过JavaScript动态添加 -->
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>暂无任务，添加您的第一个任务吧！</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2023 任务记录网站 | 简洁高效的任务管理工具</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

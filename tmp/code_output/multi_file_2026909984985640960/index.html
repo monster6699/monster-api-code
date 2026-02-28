@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务记录</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>任务记录</h1>
+            <p>记录您的每日任务</p>
+        </header>
+        
+        <div class="task-form">
+            <input type="text" id="taskInput" placeholder="输入新任务...">
+            <button id="addTaskBtn">添加任务</button>
+        </div>
+        
+        <div class="task-list">
+            <h2>任务列表</h2>
+            <ul id="taskList">
+                <!-- 任务将动态添加到这里 -->
+            </ul>
+        </div>
+        
+        <div class="stats">
+            <p>总任务: <span id="totalTasks">0</span> | 已完成: <span id="completedTasks">0</span></p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
