@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.monster.monsteraicode.ai.model.enums.CodeGenTypeEnum;
+import com.monster.monsteraicode.constant.AppConstant;
 import com.monster.monsteraicode.exception.BusinessException;
 import com.monster.monsteraicode.exception.ErrorCode;
 
@@ -17,17 +18,17 @@ import java.nio.charset.StandardCharsets;
  */
 public abstract class CodeFileSaverTemplate<T> {
     // 文件保存根目录
-    private static final String FILE_SAVE_ROOT_DIR = System.getProperty("user.dir") + "/tmp/code_output";
+    protected static final String FILE_SAVE_ROOT_DIR = AppConstant.CODE_OUTPUT_ROOT_DIR;
 
     /**
      * 保存代码标准流程
      */
-    public final File saveCode(T resualt) {
+    public final File saveCode(T resualt, Long appId) {
         //1.开启输入校验
         validateInput(resualt);
         //2.生成路径
 
-        String baseDirPath = buildUniqueDir();
+        String baseDirPath = buildUniqueDir(appId);
         //3.写入文件
         saveFiles(resualt, baseDirPath);
 
@@ -42,9 +43,12 @@ public abstract class CodeFileSaverTemplate<T> {
         }
     };
 
-    private String buildUniqueDir() {
+    private String buildUniqueDir(Long appId) {
+        if(appId == null) {
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "应用Id不能为空");
+        }
         String bizType = getCodeType().getValue();
-        String uniqueDirName = StrUtil.format("{}_{}", bizType, IdUtil.getSnowflakeNextIdStr());
+        String uniqueDirName = StrUtil.format("{}_{}", bizType, appId);
         String dirPath = FILE_SAVE_ROOT_DIR + File.separator + uniqueDirName;
         FileUtil.mkdir(dirPath);
         return dirPath;
