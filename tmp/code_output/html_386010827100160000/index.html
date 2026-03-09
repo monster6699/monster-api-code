@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客 | 分享技术与生活</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+    <style>
+        /* CSS重置和基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #f9f9f9;
+            --dark-color: #333;
+            --gray-color: #ecf0f1;
+            --text-color: #333;
+            --text-light: #777;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-color);
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        ul {
+            list-style: none;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a252f;
+        }
+        
+        .section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary-color);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        /* 导航栏样式 */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .logo span {
+            color: var(--secondary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            bottom: -5px;
+            left: 0;
+            transition: var(--transition);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+        }
+        
+        /* 英雄区域样式 */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            opacity: 0.9;
+        }
+        
+        /* 博客文章区域样式 */
+        .blog-posts {
+            background-color: white;
+        }
+        
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .post-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .post-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .post-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .post-content {
+            padding: 25px;
+        }
+        
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .post-category {
+            background-color: var(--gray-color);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .post-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .post-excerpt {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .read-more {
+            color: var(--primary-color);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .read-more:hover {
+            color: var(--accent-color);
+        }
+        
+        /* 关于我区域样式 */
+        .about {
+            background-color: var(--gray-color);
+        }
+        
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .about-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+        
+        /* 联系表单区域样式 */
+        .contact {
+            background-color: white;
+        }
+        
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--gray-color);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        
+        .form-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .form-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 50px 0 20px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .about-image, .about-text {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                box-shadow: var(--shadow);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+                z-index: 999;
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .posts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-form {
+                padding: 30px 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero {
+                padding: 70px 0;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">个人<span>博客</span></a>
+                
+                <div class="menu-toggle" id="menuToggle">
+                    ☰
+                </div>
+                
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home">首页</a></li>
+                    <li><a href="#blog">博客</a></li>
+                    <li><a href="#about">关于我</a></li>
+                    <li><a href="#contact">联系</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>欢迎来到我的个人博客</h1>
+                <p>在这里，我分享关于前端开发、技术思考和生活感悟。希望通过我的文章，能给你带来一些启发和帮助。</p>
+                <a href="#blog" class="btn">阅读博客</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 博客文章区域 -->
+    <section class="section blog-posts" id="blog">
+        <div class="container">
+            <h2 class="section-title">最新文章</h2>
+            
+            <div class="posts-grid" id="postsContainer">
+                <!-- 博客文章将通过JavaScript动态生成 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我区域 -->
+    <section class="section about" id="about">
+        <div class="container">
+            <h2 class="section-title">关于我</h2>
+            
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://picsum.photos/600/500?random=1" alt="关于我的图片">
+                </div>
+                
+                <div class="about-text">
+                    <h3>你好，我是李明</h3>
+                    <p>我是一名前端开发工程师，拥有5年的Web开发经验。我热衷于探索新技术，喜欢将复杂的问题简单化，并通过代码创造优雅的解决方案。</p>
+                    <p>在我的职业生涯中，我参与了多个大型项目的开发，从企业级应用到创新型产品。我擅长使用HTML、CSS、JavaScript以及现代前端框架构建响应式、高性能的Web应用。</p>
+                    <p>除了技术，我还热爱阅读、摄影和旅行。我相信生活与工作应该平衡，而创意往往来自于生活中的点滴灵感。</p>
+                    <p>创建这个博客是为了记录我的学习历程，分享我的见解，并与志同道合的人交流。如果你对我的文章有任何想法或建议，欢迎随时联系我！</p>
+                    <a href="#contact" class="btn btn-secondary">联系我</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系表单区域 -->
+    <section class="section contact" id="contact">
+        <div class="container">
+            <h2 class="section-title">联系我</h2>
+            
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" class="form-control" placeholder="请输入您的姓名" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" id="email" class="form-control" placeholder="请输入您的邮箱" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">主题</label>
+                        <input type="text" id="subject" class="form-control" placeholder="请输入邮件主题" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">消息</label>
+                        <textarea id="message" class="form-control" placeholder="请输入您的消息..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" style="width: 100%;">发送消息</button>
+                    
+                    <div class="form-message" id="formMessage"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>个人博客</h3>
+                    <p>一个分享前端开发、技术思考和生活感悟的个人空间。希望通过我的文章，能给你带来一些启发和帮助。</p>
+                    <div class="social-links">
+                        <a href="#" title="GitHub">GitHub</a>
+                        <a href="#" title="Twitter">Twitter</a>
+                        <a href="#" title="LinkedIn">LinkedIn</a>
+                        <a href="#" title="Email">Email</a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>快速链接</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">首页</a></li>
+                        <li><a href="#blog">博客</a></li>
+                        <li><a href="#about">关于我</a></li>
+                        <li><a href="#contact">联系</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>博客分类</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-category="前端开发">前端开发</a></li>
+                        <li><a href="#" data-category="JavaScript">JavaScript</a></li>
+                        <li><a href="#" data-category="CSS技巧">CSS技巧</a></li>
+                        <li><a href="#" data-category="生活感悟">生活感悟</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 个人博客. 保留所有权利. 由李明创建.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 博客文章数据
+        const blogPosts = [
+            {
+                id: 1,
+                title: "深入理解JavaScript闭包",
+                excerpt: "闭包是JavaScript中一个强大且重要的概念。本文将深入探讨闭包的工作原理、使用场景以及常见陷阱。",
+                category: "JavaScript",
+                date: "2023-10-15",
+                readTime: "8分钟",
+                image: "https://picsum.photos/800/600?random=2"
+            },
+            {
+                id: 2,
+                title: "CSS Grid布局完全指南",
+                excerpt: "CSS Grid是现代Web布局的强大工具。本指南将带你从基础到高级，掌握Grid布局的所有技巧。",
+                category: "CSS技巧",
+                date: "2023-10-10",
+                readTime: "12分钟",
+                image: "https://picsum.photos/800/600?random=3"
+            },
+            {
+                id: 3,
+                title: "前端性能优化最佳实践",
+                excerpt: "网站性能直接影响用户体验和SEO排名。本文分享一些前端性能优化的实用技巧和最佳实践。",
+                category: "前端开发",
+                date: "2023-10-05",
+                readTime: "10分钟",
+                image: "https://picsum.photos/800/600?random=4"
+            },
+            {
+                id: 4,
+                title: "响应式设计中的图片优化策略",
+                excerpt: "在响应式网站中，图片优化是一个重要课题。本文将探讨多种图片优化策略和现代解决方案。",
+                category: "前端开发",
+                date: "2023-09-28",
+                readTime: "7分钟",
+                image: "https://picsum.photos/800/600?random=5"
+            },
+            {
+                id: 5,
+                title: "如何保持编程学习的动力",
+                excerpt: "学习编程是一个长期的过程，保持动力至关重要。本文分享一些保持学习热情和持续进步的方法。",
+                category: "生活感悟",
+                date: "2023-09-20",
+                readTime: "6分钟",
+                image: "https://picsum.photos/800/600?random=6"
+            },
+            {
+                id: 6,
+                title: "原生JavaScript实现现代UI组件",
+                excerpt: "在不依赖框架的情况下，如何使用原生JavaScript实现常见的现代UI组件，如模态框、标签页等。",
+                category: "JavaScript",
+                date: "2023-09-15",
+                readTime: "15分钟",
+                image: "https://picsum.photos/800/600?random=7"
+            }
+        ];
+
+        // DOM元素
+        const postsContainer = document.getElementById('postsContainer');
+        const navLinks = document.getElementById('navLinks');
+        const menuToggle = document.getElementById('menuToggle');
+        const contactForm = document.getElementById('contactForm');
+        const formMessage = document.getElementById('formMessage');
+        const categoryLinks = document.querySelectorAll('[data-category]');
+
+        // 初始化函数
+        function init() {
+            // 渲染博客文章
+            renderBlogPosts();
+            
+            // 设置移动端菜单切换
+            setupMobileMenu();
+            
+            // 设置联系表单提交
+            setupContactForm();
+            
+            // 设置分类筛选
+            setupCategoryFilter();
+            
+            // 设置平滑滚动
+            setupSmoothScrolling();
+        }
+
+        // 渲染博客文章
+        function renderBlogPosts(posts = blogPosts) {
+            postsContainer.innerHTML = '';
+            
+            posts.forEach(post => {
+                const postElement = document.createElement('article');
+                postElement.className = 'post-card';
+                
+                postElement.innerHTML = `
+                    <img src="${post.image}" alt="${post.title}" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span class="post-date">${post.date}</span>
+                            <span class="post-category">${post.category}</span>
+                        </div>
+                        <h3 class="post-title">${post.title}</h3>
+                        <p class="post-excerpt">${post.excerpt}</p>
+                        <div class="post-meta">
+                            <span>阅读时间: ${post.readTime}</span>
+                            <a href="#" class="read-more" data-id="${post.id}">阅读全文 →</a>
+                        </div>
+                    </div>
+                `;
+                
+                postsContainer.appendChild(postElement);
+            });
+            
+            // 为"阅读全文"链接添加事件
+            document.querySelectorAll('.read-more').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const postId = this.getAttribute('data-id');
+                    showPostModal(postId);
+                });
+            });
+        }
+
+        // 显示文章详情模态框
+        function showPostModal(postId) {
+            const post = blogPosts.find(p => p.id == postId);
+            
+            if (!post) return;
+            
+            // 创建模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2000;
+                padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="
+                    background-color: white;
+                    border-radius: 10px;
+                    max-width: 800px;
+                    width: 100%;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    position: relative;
+                ">
+                    <button class="modal-close" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        cursor: pointer;
+                        color: var(--secondary-color);
+                        z-index: 10;
+                    ">×</button>
+                    
+                    <img src="${post.image}" alt="${post.title}" style="width: 100%; height: 300px; object-fit: cover;">
+                    
+                    <div style="padding: 30px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; color: var(--text-light);">
+                            <span>${post.date}</span>
+                            <span style="background-color: var(--gray-color); padding: 3px 10px; border-radius: 20px;">${post.category}</span>
+                        </div>
+                        
+                        <h2 style="font-size: 2rem; margin-bottom: 20px; color: var(--secondary-color);">${post.title}</h2>
+                        
+                        <div style="margin-bottom: 30px; color: var(--text-light);">
+                            <strong>阅读时间:</strong> ${post.readTime}
+                        </div>
+                        
+                        <div style="line-height: 1.8; color: var(--text-color);">
+                            <p>${post.excerpt}</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 添加关闭事件
+            const closeBtn = modal.querySelector('.modal-close');
+            closeBtn.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+            
+            // 点击模态框背景关闭
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    document.body.removeChild(modal);
+                }
+            });
+            
+            // 添加ESC键关闭功能
+            document.addEventListener('keydown', function closeOnEsc(e) {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', closeOnEsc);
+                }
+            });
+        }
+
+        // 设置移动端菜单切换
+        function setupMobileMenu() {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+            });
+            
+            // 点击链接后关闭菜单
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    menuToggle.textContent = '☰';
+                });
+            });
+        }
+
+        // 设置联系表单提交
+        function setupContactForm() {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                // 简单验证
+                if (!name || !email || !subject || !message) {
+                    showFormMessage('请填写所有必填字段', 'error');
+                    return;
+                }
+                
+                // 模拟表单提交
+                showFormMessage('消息发送中...', 'info');
+                
+                // 模拟网络延迟
+                setTimeout(() => {
+                    // 在实际应用中，这里会发送数据到服务器
+                    showFormMessage('消息已成功发送！我会尽快回复您。', 'success');
+                    
+                    // 重置表单
+                    contactForm.reset();
+                }, 1500);
+            });
+        }
+
+        // 显示表单消息
+        function showFormMessage(text, type) {
+            formMessage.textContent = text;
+            formMessage.className = 'form-message';
+            
+            if (type === 'success') {
+                formMessage.classList.add('success');
+            } else if (type === 'error') {
+                formMessage.classList.add('error');
+            } else {
+                formMessage.style.display = 'block';
+                formMessage.style.backgroundColor = '#d1ecf1';
+                formMessage.style.color = '#0c5460';
+                formMessage.style.border = '1px solid #bee5eb';
+            }
+            
+            // 3秒后隐藏消息
+            setTimeout(() => {
+                formMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // 设置分类筛选
+        function setupCategoryFilter() {
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const category = this.getAttribute('data-category');
+                    
+                    // 高亮当前分类
+                    categoryLinks.forEach(l => l.style.fontWeight = 'normal');
+                    this.style.fontWeight = 'bold';
+                    
+                    // 筛选文章
+                    if (category === '全部') {
+                        renderBlogPosts();
+                    } else {
+                        const filteredPosts = blogPosts.filter(post => post.category === category);
+                        renderBlogPosts(filteredPosts);
+                    }
+                    
+                    // 滚动到博客区域
+                    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+        }
+
+        // 设置平滑滚动
+        function setupSmoothScrolling() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
