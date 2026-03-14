@@ -25,8 +25,10 @@ import com.monster.monsteraicode.entity.App;
 import com.monster.monsteraicode.entity.User;
 import com.monster.monsteraicode.mapper.AppMapper;
 import com.monster.monsteraicode.service.AppService;
+import com.monster.monsteraicode.service.ChatHistoryService;
 import com.monster.monsteraicode.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -41,11 +43,14 @@ import java.util.List;
  *
  * @author <a href="https://github.com/monster999">monster</a>
  */
+@Slf4j
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private ChatHistoryService chatHistoryService;
     @Autowired
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
 
@@ -143,6 +148,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         if (!UserConstant.ADMIN_ROLE.equals(loginUser.getUserRole()) && !oldApp.getUserId().equals(loginUser.getId())) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "无权限删除他人的应用");
         }
+        // 级联删除该应用的所有对话历史
+        chatHistoryService.deleteChatHistoryByAppId(id);
         return this.removeById(id);
     }
 
@@ -269,8 +276,23 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "不支持的代码生成类型");
         }
-        // 5. 调用 AI 生成代码
-        return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        // 5. 保存用户消息
+        chatHistoryService.addUserMessage(appId, message, loginUser.getId());
+        // 6. 调用 AI 生成代码，收集完整响应后保存 AI 消息
+        StringBuilder aiResponse = new StringBuilder();
+        return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId)
+                .doOnNext(aiResponse::append)
+                .doOnComplete(() -> {
+                    String fullResponse = aiResponse.toString();
+                    if (StrUtil.isNotBlank(fullResponse)) {
+                        chatHistoryService.addAiMessage(appId, fullResponse, loginUser.getId());
+                    }
+                })
+                .doOnError(e -> {
+                    String errorMsg = "AI 回复失败：" + e.getMessage();
+                    log.error("应用 {} 的 AI 生成代码失败", appId, e);
+                    chatHistoryService.addAiMessage(appId, errorMsg, loginUser.getId());
+                });
     }
 
 

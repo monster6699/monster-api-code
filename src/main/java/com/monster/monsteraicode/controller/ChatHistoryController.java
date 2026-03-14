@@ -1,17 +1,24 @@
 package com.monster.monsteraicode.controller;
 
-import com.mybatisflex.core.paginate.Page;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.monster.monsteraicode.annotation.AuthCheck;
+import com.monster.monsteraicode.common.BaseResponse;
+import com.monster.monsteraicode.common.ResultUtils;
+import com.monster.monsteraicode.constant.UserConstant;
 import com.monster.monsteraicode.entity.ChatHistory;
+import com.monster.monsteraicode.entity.User;
+import com.monster.monsteraicode.exception.ErrorCode;
+import com.monster.monsteraicode.exception.ThrowUtils;
+import com.monster.monsteraicode.model.dto.chathistory.ChatHistoryQueryRequest;
+import com.monster.monsteraicode.model.dto.vo.ChatHistoryVO;
 import com.monster.monsteraicode.service.ChatHistoryService;
-import org.springframework.web.bind.annotation.RestController;
+import com.monster.monsteraicode.service.UserService;
+import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,73 +32,52 @@ public class ChatHistoryController {
 
     @Autowired
     private ChatHistoryService chatHistoryService;
+    @Autowired
+    private UserService userService;
+
+    // ==================== 用户接口 ====================
 
     /**
-     * 保存对话历史。
-     *
-     * @param chatHistory 对话历史
-     * @return {@code true} 保存成功，{@code false} 保存失败
+     * 游标分页查询某个应用的对话历史（仅应用创建者和管理员可见）
+     * 首次加载不传 cursor，加载更多传上一页最小的消息 id
      */
-    @PostMapping("save")
-    public boolean save(@RequestBody ChatHistory chatHistory) {
-        return chatHistoryService.save(chatHistory);
+    @GetMapping("/list")
+    @Operation(summary = "游标分页查询应用的对话历史")
+    public BaseResponse<List<ChatHistoryVO>> listChatHistoryByAppId(
+            @RequestParam Long appId,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 无效");
+        User loginUser = userService.getLoginUser(request);
+        List<ChatHistoryVO> chatHistoryVOList = chatHistoryService.listChatHistoryByAppId(appId, cursor, size, loginUser);
+        return ResultUtils.success(chatHistoryVOList);
     }
+
+    @GetMapping("/list/page")
+    @Operation(summary = "游标根据创建时间分页查询应用的对话历史")
+    public BaseResponse<Page<ChatHistory>> listChatHistoryByPage(
+            @RequestParam Long appId,
+            @RequestParam(required = false) LocalDateTime lastCreateTime,
+            @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+        ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用 ID 无效");
+        User loginUser = userService.getLoginUser(request);
+        Page<ChatHistory> chatHistoryPage = chatHistoryService.listChatHistoryByPageAndAppId(appId, lastCreateTime, size, loginUser);
+        return ResultUtils.success(chatHistoryPage);
+    }
+
+    // ==================== 管理员接口 ====================
 
     /**
-     * 根据主键删除对话历史。
-     *
-
- * 这是一个HTTP DELETE请求处理方法，用于删除指定ID的对话历史记录。
- *
-     * @param id 主键，用于标识要删除的对话历史记录
-     * @return {@code true} 删除成功，{@code false} 删除失败
+     * 管理员分页查询所有对话历史（按时间降序排序）
      */
-    @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Long id) {
-        return chatHistoryService.removeById(id);
+    @PostMapping("/list/page/admin")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @Operation(summary = "分页查询对话历史列表（管理员）")
+    public BaseResponse<Page<ChatHistoryVO>> listChatHistoryByPage(@RequestBody ChatHistoryQueryRequest chatHistoryQueryRequest) {
+        ThrowUtils.throwIf(chatHistoryQueryRequest == null, ErrorCode.PARAMS_ERROR);
+        Page<ChatHistoryVO> chatHistoryVOPage = chatHistoryService.listChatHistoryByPage(chatHistoryQueryRequest);
+        return ResultUtils.success(chatHistoryVOPage);
     }
-
-    /**
-     * 根据主键更新对话历史。
-     *
-     * @param chatHistory 对话历史
-     * @return {@code true} 更新成功，{@code false} 更新失败
-     */
-    @PutMapping("update")
-    public boolean update(@RequestBody ChatHistory chatHistory) {
-        return chatHistoryService.updateById(chatHistory);
-    }
-
-    /**
-     * 查询所有对话历史。
-     *
-     * @return 所有数据
-     */
-    @GetMapping("list")
-    public List<ChatHistory> list() {
-        return chatHistoryService.list();
-    }
-
-    /**
-     * 根据主键获取对话历史。
-     *
-     * @param id 对话历史主键
-     * @return 对话历史详情
-     */
-    @GetMapping("getInfo/{id}")
-    public ChatHistory getInfo(@PathVariable Long id) {
-        return chatHistoryService.getById(id);
-    }
-
-    /**
-     * 分页查询对话历史。
-     *
-     * @param page 分页对象
-     * @return 分页对象
-     */
-    @GetMapping("page")
-    public Page<ChatHistory> page(Page<ChatHistory> page) {
-        return chatHistoryService.page(page);
-    }
-
 }

@@ -11,6 +11,13 @@ spring:
       max-lifetime: 1800000
       idle-timeout: 60000
       connection-test-query: SELECT 1
+  # redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      ttl: 3600
 
 server:
   port: 8124
